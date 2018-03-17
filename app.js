@@ -83,6 +83,21 @@ var UIController = (function () {
             // insert the HTML to DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHtml);
         },
+        clearFields: function () {
+            var fields, fieldsArr;
+            // querySelectorAll method will return a list not an array
+            fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputValue);
+            // convert the list to an array, set the 'this' variable to fields, which means fields can borrow the slice method from array
+            // slice() can return a copy of an array that is called on
+            fieldsArr = Array.prototype.slice.call(fields);
+            // first parameter is current element (dom), second parameter is the index of the current element (dom)
+            fieldsArr.forEach(function(current, index, array) {
+                // set the content equals to empty
+                current.value = "";
+            });
+            // make sure the cursor will focus on the first element (dom)
+            fieldsArr[0].focus();
+        },
         getDOMstrings: function () {
             return DOMstrings;
         }
@@ -114,8 +129,10 @@ var controller = (function (budgetCtrl, UICtrl) {
         newItem = budgetCtrl.addItem(input.type, input.description, input.value);
         // 3. add the item to UI
         UICtrl.addListItem(newItem, input.type);
-        // 4. calculate the budget
-        // 5. display the budget on UI
+        // 4. clear the input fields
+        UICtrl.clearFields();
+        // 5. calculate the budget
+        // 6. display the budget on UI
 
     };
 
