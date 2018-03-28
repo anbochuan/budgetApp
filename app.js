@@ -4,12 +4,21 @@ var budgetController = (function () {
         this.id = id;
         this.description = description;
         this.value = value;
-    }
+    };
     var Income = function (id, description, value) {
         this.id = id;
         this.description = description;
         this.value = value;
-    }
+    };
+    var calculateTotal = function (type) {
+        var sum = 0;
+        data.allItems[type].forEach(function(current) {
+            sum += current.value;
+        });
+        // return sum;
+        data.totals[type] = sum;
+    };
+
     var data = {
         allItems: {
             exp: [],
@@ -18,7 +27,9 @@ var budgetController = (function () {
         totals: {
             exp: 0,
             inc: 0
-        }
+        },
+        budget: 0,
+        percentage: -1
     };
 
     return {
@@ -40,6 +51,34 @@ var budgetController = (function () {
             data.allItems[type].push(newItem);
             console.log(data);
             return newItem;
+        },
+        calculateBudget: function () {
+            // 1. calculate total income and expense
+            calculateTotal('exp');
+            calculateTotal('inc');
+            // 2. calculate the budget: income - expense
+            data.budget = data.totals.inc - data.totals.exp;
+            // 3. calculate the percentage
+            if (data.totals.inc > 0) { // this will avoid the infinity problem
+                data.percentage = Math.round((data.totals.exp / data.totals.inc) * 100);
+            } else {
+                data.percentage = -1;
+            }
+        },
+        // sumOfBudget: function () {
+        //     data.budget = totalBudget('inc') - totalBudget('exp');
+        // },
+        // percentageOfBudget: function () {
+        //     data.percentage = Math.round((totalBudget('exp') / totalBudget('inc')) * 100);
+        // },
+        getBudget: function () {
+            // return an object with 4 properties
+            return {
+                budget: data.budget,
+                totalInc: data.totals.inc,
+                totalExp: data.totals.exp,
+                percentage: data.percentage
+            };
         }
 
     };
@@ -120,8 +159,11 @@ var controller = (function (budgetCtrl, UICtrl) {
 
     var updateBudget = function () {
         // 1. calculate the budget
+        budgetCtrl.calculateBudget();
         // 2. return the budget
+        var budget = budgetCtrl.getBudget();
         // 3. display the budget on UI
+        console.log(budget);
     }
 
 
